@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Quiz Latino PWA V5.1</title>
+    <title>Quiz Latino PWA V6</title>
     
     <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Quiz%20Latino%22%2C%22short_name%22%3A%22Quiz%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f0f1a%22%2C%22theme_color%22%3A%22%230f0f1a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Ctext%20y%3D'.9em'%20font-size%3D'90'%3E%F0%9F%8F%9B%EF%B8%8F%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
 
@@ -39,12 +39,10 @@
         .question-card { background: var(--surface); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 8px 24px rgba(0,0,0,0.1); transition: background-color 0.3s; } 
         .question-card h2 { font-size: 1.15rem; font-weight: 600; line-height: 1.5; }
         
-        /* Stili Opzioni Quiz */
         .option-btn { display: flex; align-items: center; width: 100%; background: var(--surface); border: 2px solid transparent; color: var(--text); padding: 1rem 1.2rem; margin-bottom: 0.8rem; border-radius: 12px; font-size: 1rem; font-family: inherit; cursor: pointer; text-align: left; transition: all 0.2s; }
         .option-btn:hover:not(:disabled) { background: var(--surface-hover); } .option-btn:active:not(:disabled) { transform: scale(0.98); } .option-btn.selected { border-color: var(--accent); } .option-btn.correct { background: rgba(52, 211, 153, 0.1); border-color: var(--green); color: var(--green); } .option-btn.wrong { background: rgba(248, 113, 113, 0.1); border-color: var(--red); color: var(--red); } .option-btn:disabled { cursor: not-allowed; opacity: 0.6; }
         .key-badge { background: var(--bg); color: var(--subtext); font-family: 'JetBrains Mono', monospace; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; margin-right: 12px; }
         
-        /* Stili Domande Aperte (Flashcard) */
         .fc-answer-card { background: var(--surface-hover); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid var(--accent); font-size: 1.05rem; line-height: 1.6;}
         .fc-show-btn { background: var(--surface); border: 2px dashed var(--accent); color: var(--accent); width: 100%; padding: 1.5rem; border-radius: 16px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .fc-show-btn:hover { background: rgba(124, 106, 245, 0.1); }
@@ -64,7 +62,6 @@
 
         .btn-primary { background: var(--accent); color: #fff; border: none; padding: 1rem 2rem; border-radius: 12px; font-size: 1.1rem; font-weight: 600; font-family: inherit; cursor: pointer; width: 100%; transition: all 0.2s; text-align:center;} .btn-primary:active:not(:disabled) { transform: scale(0.96); } .btn-primary:disabled { background: var(--surface); color: var(--subtext); cursor: not-allowed; }
 
-        /* Struttura Schermata Home */
         .home-grid { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2rem; }
         .home-card { background: var(--surface); border-radius: 20px; padding: 2rem; text-align: center; cursor: pointer; border: 2px solid transparent; transition: 0.2s; box-shadow: 0 8px 24px rgba(0,0,0,0.15);}
         .home-card:hover { border-color: var(--accent); transform: translateY(-5px); }
@@ -307,6 +304,21 @@
         </div>
     </div>
 
+    <div id="resumeOverlay" class="overlay">
+        <div class="overlay-content" style="height: auto; min-height: 40vh;">
+            <div class="overlay-header"><h3>Sessione Interrotta</h3><button class="icon-btn" onclick="goHome()">✕</button></div>
+            <div class="overlay-body" style="text-align:center;">
+                <p style="margin-bottom: 2rem; color:var(--subtext); font-size:1.05rem;">
+                    Hai una sessione di studio in sospeso per questa modalità. Vuoi riprenderla da dove ti eri fermato?
+                </p>
+                <div style="display:flex; flex-direction:column; gap:1rem;">
+                    <button class="btn-primary" onclick="resumeSession()">Continua Sessione</button>
+                    <button class="btn-primary" style="background:var(--surface); color:var(--text);" onclick="discardSession()">Inizia Nuovo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
@@ -327,23 +339,24 @@ window.onerror = function(msg, url, line) {
 };
 
 // ==============================================================
-// 2. VARIABILI GLOBALI E CHIAVI DI MEMORIA
+// 2. VARIABILI GLOBALI E CHIAVI DI MEMORIA (V6)
 // ==============================================================
-const THEME_KEY = 'quiz_latino_theme_v5';
+const THEME_KEY = 'ql_theme_v6';
 
-const DB_QUIZ = 'ql_db_quiz_v5';
-const ERR_QUIZ = 'ql_err_quiz_v5';
-const HIST_QUIZ = 'ql_hist_quiz_v5';
-const BM_QUIZ = 'ql_bks_quiz_v5';
+const DB_QUIZ = 'ql_db_quiz_v6';
+const ERR_QUIZ = 'ql_err_quiz_v6';
+const HIST_QUIZ = 'ql_hist_quiz_v6';
+const BM_QUIZ = 'ql_bks_quiz_v6';
+const AUTO_QUIZ = 'ql_auto_quiz_v6';
 
-const DB_APERTE = 'ql_db_aperte_v5';
-const ERR_APERTE = 'ql_err_aperte_v5';
-const HIST_APERTE = 'ql_hist_aperte_v5';
-const BM_APERTE = 'ql_bks_aperte_v5';
+const DB_APERTE = 'ql_db_aperte_v6';
+const ERR_APERTE = 'ql_err_aperte_v6';
+const HIST_APERTE = 'ql_hist_aperte_v6';
+const BM_APERTE = 'ql_bks_aperte_v6';
+const AUTO_APERTE = 'ql_auto_aperte_v6';
 
 let DB_ARRAY = []; 
 
-// Default a 24 domande casuali
 let appState = { 
     currentMode: 'home', 
     studyMode: 'all', 
@@ -377,7 +390,7 @@ function goHome() {
     appState.currentMode = 'home';
     hideAllScreens();
     document.getElementById('btnHome').classList.add('hidden');
-    document.getElementById('titleText').innerHTML = "QUIZ LATINO V5.1";
+    document.getElementById('titleText').innerHTML = "QUIZ LATINO V6";
     document.getElementById('btnStats').disabled = true;
     document.getElementById('btnSettings').disabled = true;
     document.getElementById('homeScreen').classList.remove('hidden');
@@ -399,10 +412,19 @@ function openMode(mode) {
 
     if (storedDb) {
         DB_ARRAY = JSON.parse(storedDb);
-        buildLessonGrid(); 
-        appState.studyMode = 'all'; 
-        setMode('all');
-        initStudySession();
+        buildLessonGrid(); // Popola la selezione lezioni con tutte le lezioni disponibili
+        
+        // Controlla se c'è un autosalvataggio per questa modalità
+        let autoKey = (mode === 'quiz') ? AUTO_QUIZ : AUTO_APERTE;
+        let saved = null;
+        try { saved = JSON.parse(localStorage.getItem(autoKey)); } catch(e){}
+        
+        if (saved && saved.appState && saved.appState.currentMode === mode) {
+            document.getElementById('resumeOverlay').classList.add('active');
+        } else {
+            applyModeDefaults(mode);
+            initStudySession();
+        }
     } else {
         if (mode === 'quiz') document.getElementById('uploadQuizScreen').classList.remove('hidden');
         if (mode === 'aperte') document.getElementById('uploadAperteScreen').classList.remove('hidden');
@@ -410,13 +432,95 @@ function openMode(mode) {
 }
 
 function hideAllScreens() {
-    ['homeScreen', 'uploadQuizScreen', 'uploadAperteScreen', 'quizScreen', 'flashcardScreen', 'finalScreen', 'bottomBar'].forEach(id => {
+    ['homeScreen', 'uploadQuizScreen', 'uploadAperteScreen', 'quizScreen', 'flashcardScreen', 'finalScreen', 'bottomBar', 'resumeOverlay'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
+        document.getElementById(id).classList.remove('active'); // Gestisce anche gli overlay
     });
 }
 
+function applyModeDefaults(mode) {
+    appState.studyMode = 'all';
+    appState.isRandom = true;
+    
+    // Assicuriamoci che tutte le lezioni siano selezionate di default
+    appState.selectedLessons.clear();
+    const lessons = getUniqueLessons();
+    lessons.forEach(l => appState.selectedLessons.add(l));
+
+    if (mode === 'quiz') {
+        appState.numQs = 24;
+    } else {
+        appState.numQs = 9999;
+    }
+}
+
 // ==============================================================
-// 4. PARSER HTML: QUIZ
+// 4. AUTOSAVE E RESUME (NUOVO)
+// ==============================================================
+function getAutosaveKey() {
+    return appState.currentMode === 'quiz' ? AUTO_QUIZ : AUTO_APERTE;
+}
+
+function saveAutosave() {
+    if (appState.testSaved || appState.currentMode === 'home') { 
+        clearAutosave(); 
+        return; 
+    }
+    try { 
+        // Serializza il Set delle lezioni per il salvataggio
+        let stateToSave = { ...appState, selectedLessons: Array.from(appState.selectedLessons) };
+        localStorage.setItem(getAutosaveKey(), JSON.stringify({
+            appState: stateToSave, 
+            currentQuiz, 
+            score, 
+            sessionHistory
+        })); 
+    } catch(e){}
+}
+
+function clearAutosave() {
+    try { localStorage.removeItem(getAutosaveKey()); } catch(e){}
+}
+
+function resumeSession() {
+    document.getElementById('resumeOverlay').classList.remove('active');
+    let saved = JSON.parse(localStorage.getItem(getAutosaveKey()));
+    
+    appState = saved.appState;
+    // Ripristina il Set
+    appState.selectedLessons = new Set(saved.appState.selectedLessons);
+    currentQuiz = saved.currentQuiz;
+    score = saved.score;
+    sessionHistory = saved.sessionHistory;
+    
+    // Riprendiamo esattamente dalla domanda successiva all'ultima risposta data
+    currentIndex = sessionHistory.length; 
+    
+    if (currentIndex >= currentQuiz.length) {
+        showFinalScreen();
+    } else {
+        hideAllScreens();
+        document.getElementById('btnHome').classList.remove('hidden');
+        if (appState.currentMode === 'quiz') {
+            document.getElementById('quizScreen').classList.remove('hidden');
+            document.getElementById('bottomBar').classList.remove('hidden');
+            renderQuizQuestion();
+        } else {
+            document.getElementById('flashcardScreen').classList.remove('hidden');
+            renderFlashcard();
+        }
+    }
+}
+
+function discardSession() {
+    document.getElementById('resumeOverlay').classList.remove('active');
+    clearAutosave();
+    applyModeDefaults(appState.currentMode);
+    initStudySession();
+}
+
+// ==============================================================
+// 5. PARSER HTML: QUIZ
 // ==============================================================
 document.getElementById('htmlInputQuiz').addEventListener('change', (e) => {
     const file = e.target.files[0]; if(!file) return;
@@ -465,7 +569,7 @@ document.getElementById('htmlInputQuiz').addEventListener('change', (e) => {
 });
 
 // ==============================================================
-// 5. PARSER HTML: DOMANDE APERTE (Macchina a Stati Fissa)
+// 6. PARSER HTML: DOMANDE APERTE (Macchina a Stati Perfetta)
 // ==============================================================
 document.getElementById('htmlInputAperte').addEventListener('change', (e) => {
     const file = e.target.files[0]; if(!file) return;
@@ -490,11 +594,11 @@ document.getElementById('htmlInputAperte').addEventListener('change', (e) => {
                     return;
                 }
                 
-                // Riconosce l'inizio di una NUOVA domanda
+                // Riconosce l'inizio di una NUOVA domanda. 
+                // Controlla che non ci troviamo già a leggere la domanda (state !== 1) per evitare falsi positivi 
                 let qMatch = text.match(/^\d{1,3}\.\s+(.*)/);
                 
                 if (qMatch && state !== 1) { 
-                    // Salva la domanda precedente se c'è
                     if (currentItem) {
                         tempDB.push({
                             question: currentItem.qLines.join("<br><br>"),
@@ -517,7 +621,7 @@ document.getElementById('htmlInputAperte').addEventListener('change', (e) => {
                         if (text.startsWith('*')) {
                             // Trovato l'asterisco! La domanda è finita, inizia la risposta
                             state = 2;
-                            currentItem.aLines.push(text.replace(/^\*\s*/, '')); // Togli l'asterisco visivamente
+                            currentItem.aLines.push(text.replace(/^\*\s*/, '')); // Toglie l'asterisco visivamente
                         } else {
                             // Niente asterisco, quindi questo paragrafo fa ancora parte della domanda (es. testo latino)
                             currentItem.qLines.push(text);
@@ -549,7 +653,7 @@ document.getElementById('htmlInputAperte').addEventListener('change', (e) => {
 });
 
 // ==============================================================
-// 6. HELPER DINAMICI E LOGICA DI MEMORIA
+// 7. HELPER DINAMICI
 // ==============================================================
 function getActiveKeys() {
     if (appState.currentMode === 'quiz') return { ERR: ERR_QUIZ, HIST: HIST_QUIZ, BM: BM_QUIZ, DB: DB_QUIZ };
@@ -590,7 +694,7 @@ function getAvailablePool() {
 }
 
 // ==============================================================
-// 7. INIZIO SESSIONE STUDIO
+// 8. INIZIO SESSIONE STUDIO
 // ==============================================================
 function initStudySession() {
     hideAllScreens();
@@ -605,6 +709,8 @@ function initStudySession() {
     currentQuiz = pool.slice(0, Math.min(appState.numQs, pool.length));
     currentIndex = 0; score = 0; sessionHistory = [];
     
+    saveAutosave(); // Salva lo stato iniziale (test vuoto)
+    
     if (appState.currentMode === 'quiz') {
         document.getElementById('quizScreen').classList.remove('hidden');
         document.getElementById('bottomBar').classList.remove('hidden');
@@ -616,7 +722,7 @@ function initStudySession() {
 }
 
 // ==============================================================
-// 8. LOGICA QUIZ
+// 9. LOGICA QUIZ
 // ==============================================================
 function renderQuizQuestion() {
     hasAnswered = false; const q = currentQuiz[currentIndex];
@@ -665,10 +771,12 @@ function handleQuizAnswer(btn, selectedOpt, allOpts) {
 
     sessionHistory.push({ question: q.question, lezione: q.lezione, given: selectedOpt.text, correct: correctOpt.text, isCorrect: isCorrect });
     document.getElementById('btnNext').disabled = false; document.getElementById('progressBar').style.width = `${((currentIndex + 1) / currentQuiz.length) * 100}%`;
+    
+    saveAutosave(); // Salva dopo la risposta
 }
 
 // ==============================================================
-// 9. LOGICA FLASHCARD (APERTE)
+// 10. LOGICA FLASHCARD (APERTE)
 // ==============================================================
 function renderFlashcard() {
     const q = currentQuiz[currentIndex];
@@ -710,12 +818,14 @@ function rateFlashcard(rating) {
     sessionHistory.push({ question: q.question, lezione: q.lezione, given: `Valutazione: ${rating}/5`, correct: "Richiesto: 4 o 5", isCorrect: isCorrect });
     document.getElementById('progressBar').style.width = `${((currentIndex + 1) / currentQuiz.length) * 100}%`;
     
+    saveAutosave(); // Salva dopo la votazione
+
     if (currentIndex < currentQuiz.length - 1) { currentIndex++; renderFlashcard(); } 
     else { showFinalScreen(); }
 }
 
 // ==============================================================
-// 10. GESTIONE COMUNE FINE TEST E SEGNALIBRI
+// 11. GESTIONE COMUNE FINE TEST E SEGNALIBRI
 // ==============================================================
 document.getElementById('btnNext').onclick = () => { 
     if (currentIndex < currentQuiz.length - 1) { currentIndex++; renderQuizQuestion(); } 
@@ -764,6 +874,8 @@ function showFinalScreen() {
 
 function saveTestToHistory() {
     if (appState.testSaved) return; appState.testSaved = true;
+    clearAutosave(); // Rimuove l'autosave dato che il test è concluso
+    
     let tests = []; try { tests = JSON.parse(localStorage.getItem(getActiveKeys().HIST) || '[]'); } catch(e){}
     let errorsOnly = sessionHistory.filter(h => !h.isCorrect); let now = new Date();
     let dateStr = now.toLocaleDateString('it-IT', {day:'numeric', month:'short'}) + ', ' + now.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
@@ -773,7 +885,7 @@ function saveTestToHistory() {
 }
 
 // ==============================================================
-// 11. DASHBOARD STATISTICHE UNIFICATA
+// 12. DASHBOARD STATISTICHE UNIFICATA
 // ==============================================================
 document.getElementById('btnStats').onclick = openStats;
 function openStats() { 
@@ -830,7 +942,7 @@ function renderDashboard(limit) {
 }
 
 // ==============================================================
-// 12. GESTIONE SEGNALIBRI E IMPOSTAZIONI UNIFICATE
+// 13. GESTIONE SEGNALIBRI E IMPOSTAZIONI UNIFICATE
 // ==============================================================
 function openBookmarks() { document.getElementById('bookmarksOverlay').classList.add('active'); renderBookmarksList(); }
 function closeBookmarks() { document.getElementById('bookmarksOverlay').classList.remove('active'); }
@@ -846,7 +958,7 @@ function renderBookmarksList() {
             if (appState.currentMode === 'quiz') {
                 let cOpt = qObj.options.find(o => o.is_correct); if(cOpt) correctText = cOpt.text;
             } else {
-                correctText = qObj.answer.substring(0, 100) + "..."; 
+                correctText = qObj.answer;
             }
             lezione = qObj.lezione; 
         }
@@ -938,10 +1050,15 @@ function updatePresets() {
 }
 
 function updateSettingsUI() { setMode(appState.studyMode); document.getElementById('orderToggle').checked = appState.isRandom; updatePoolBadges(); }
-function applySettings() { appState.isRandom = document.getElementById('orderToggle').checked; closeSettings(); initStudySession(); }
+function applySettings() { 
+    appState.isRandom = document.getElementById('orderToggle').checked; 
+    closeSettings(); 
+    clearAutosave(); // L'applicazione di nuove impostazioni cancella l'autosave e inizia nuovo
+    initStudySession(); 
+}
 
 document.addEventListener('keydown', (e) => {
-    if (document.getElementById('settingsOverlay').classList.contains('active') || document.getElementById('statsOverlay').classList.contains('active') || document.getElementById('bookmarksOverlay').classList.contains('active')) return;
+    if (document.getElementById('settingsOverlay').classList.contains('active') || document.getElementById('statsOverlay').classList.contains('active') || document.getElementById('bookmarksOverlay').classList.contains('active') || document.getElementById('resumeOverlay').classList.contains('active')) return;
     if (appState.currentMode === 'quiz') {
         if (e.key >= '1' && e.key <= '4') { const btns = document.querySelectorAll('.option-btn'); if (btns[parseInt(e.key) - 1] && !btns[parseInt(e.key) - 1].disabled) btns[parseInt(e.key) - 1].click(); }
         if (e.key === 'Enter') { const btnNext = document.getElementById('btnNext'); if (!btnNext.disabled && !document.getElementById('bottomBar').classList.contains('hidden')) btnNext.click(); }
