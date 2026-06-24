@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Quiz Latino V6</title>
+<title>Quiz & Flashcards</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Quiz%20%26%20Flashcards%22%2C%22short_name%22%3A%22App%20Studio%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f0f1a%22%2C%22theme_color%22%3A%22%230f0f1a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Ctext%20y%3D'.9em'%20font-size%3D'90'%3E%F0%9F%93%96%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
 <style>
 :root,[data-theme="mocha"]{--bg:#0f0f1a;--surface:#171728;--surface-hover:#212136;--accent:#7c6af5;--accent-light:#a78bfa;--green:#34d399;--red:#f87171;--yellow:#fbbf24;--text:#cdd6f4;--subtext:#a6adc8;--overlay-bg:rgba(15,15,26,0.85);--header-border:rgba(255,255,255,0.05);--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
 [data-theme="light"]{--bg:#f4f5f7;--surface:#ffffff;--surface-hover:#eef0f4;--accent:#5e4bd8;--accent-light:#7c6af5;--green:#10b981;--red:#ef4444;--yellow:#f59e0b;--text:#1e1e2e;--subtext:#6c7086;--overlay-bg:rgba(244,245,247,0.85);--header-border:rgba(0,0,0,0.08)}
@@ -87,6 +88,7 @@ main{padding:2rem 1rem calc(100px + var(--safe-bottom));flex-grow:1;display:flex
     <div class="progress-wrapper"><div class="progress-bar" id="progressBar"></div></div>
 
     <main id="mainContent">
+        <!-- HOME -->
         <div id="homeScreen" class="hidden">
             <div style="text-align:center; margin-bottom:2rem; margin-top:1rem;">
                 <h1 style="font-size:2rem; font-weight:700;">Cosa vuoi studiare?</h1>
@@ -98,15 +100,20 @@ main{padding:2rem 1rem calc(100px + var(--safe-bottom));flex-grow:1;display:flex
             </div>
         </div>
 
+        <!-- UPLOAD SCHERMATE -->
         <div id="uploadQuizScreen" class="final-stats hidden">
             <div class="final-emoji">📄</div><h2 style="margin-bottom:1rem">Database Quiz Mancante</h2>
+            <p style="color:var(--subtext); margin-bottom: 2rem; font-size:0.95rem; padding: 0 1rem;">Carica il file HTML contenente i Quiz.</p>
             <label class="btn-primary" style="cursor:pointer; display:inline-block; width:auto">Carica Database Quiz<input type="file" id="htmlInputQuiz" accept=".html,.htm" style="display:none"></label>
         </div>
+        
         <div id="uploadAperteScreen" class="final-stats hidden">
             <div class="final-emoji">🧠</div><h2 style="margin-bottom:1rem">Database Aperte Mancante</h2>
+            <p style="color:var(--subtext); margin-bottom: 2rem; font-size:0.95rem; padding: 0 1rem;">Carica il file HTML contenente le Domande Aperte.</p>
             <label class="btn-primary" style="cursor:pointer; display:inline-block; width:auto">Carica Database Aperte<input type="file" id="htmlInputAperte" accept=".html,.htm" style="display:none"></label>
         </div>
 
+        <!-- QUIZ UI -->
         <div id="quizScreen" class="hidden">
             <div class="question-card slide-in" id="qCard"><h2 id="questionText">...</h2></div>
             <div class="options-container slide-in" id="optionsContainer" style="animation-delay: 0.1s"></div>
@@ -116,6 +123,7 @@ main{padding:2rem 1rem calc(100px + var(--safe-bottom));flex-grow:1;display:flex
             </div>
         </div>
 
+        <!-- FLASHCARD UI -->
         <div id="flashcardScreen" class="hidden">
             <div class="question-card slide-in" id="fcQuestionCard"><h2 id="fcQuestionText">...</h2></div>
             <button id="fcShowBtn" class="fc-show-btn slide-in" style="animation-delay:0.1s;" onclick="showFlashcardAnswer()">Mostra Risposta</button>
@@ -135,6 +143,7 @@ main{padding:2rem 1rem calc(100px + var(--safe-bottom));flex-grow:1;display:flex
             </div>
         </div>
 
+        <!-- FINE TEST -->
         <div id="finalScreen" class="hidden final-stats">
             <div class="final-emoji" id="fEmoji"></div>
             <div class="percentage-ring" id="fPercent"></div>
@@ -145,6 +154,7 @@ main{padding:2rem 1rem calc(100px + var(--safe-bottom));flex-grow:1;display:flex
 
     <div class="bottom-bar hidden" id="bottomBar"><button id="btnNext" class="btn-primary" disabled>Avanti →</button></div>
 
+    <!-- IMPOSTAZIONI -->
     <div id="settingsOverlay" class="overlay">
         <div class="overlay-content">
             <div class="overlay-header"><h3>Impostazioni</h3><button class="icon-btn" onclick="closeSettings()">✕</button></div>
@@ -203,6 +213,7 @@ main{padding:2rem 1rem calc(100px + var(--safe-bottom));flex-grow:1;display:flex
         </div>
     </div>
 
+    <!-- STATISTICHE -->
     <div id="statsOverlay" class="overlay">
         <div class="overlay-content">
             <div class="overlay-header"><h3>Statistiche <span id="statsModeBadge" style="font-size:0.8rem; color:var(--accent); background:var(--surface); padding:4px 8px; border-radius:6px; vertical-align:middle; margin-left:10px;">QUIZ</span></h3><button class="icon-btn" onclick="closeStats()">✕</button></div>
@@ -223,6 +234,7 @@ main{padding:2rem 1rem calc(100px + var(--safe-bottom));flex-grow:1;display:flex
         </div>
     </div>
 
+    <!-- SEGNALIBRI -->
     <div id="bookmarksOverlay" class="overlay">
         <div class="overlay-content">
             <div class="overlay-header"><h3>I Tuoi Segnalibri</h3><button class="icon-btn" onclick="closeBookmarks()">✕</button></div>
@@ -230,6 +242,7 @@ main{padding:2rem 1rem calc(100px + var(--safe-bottom));flex-grow:1;display:flex
         </div>
     </div>
 
+    <!-- RESUME AUTOSAVE -->
     <div id="resumeOverlay" class="overlay">
         <div class="overlay-content" style="height: auto; min-height: 40vh;">
             <div class="overlay-header"><h3>Sessione Interrotta</h3></div>
@@ -275,11 +288,9 @@ function setTheme(themeName) {
 }
 
 function hideAllScreens() {
-    // Schermate normali: aggiungo hidden
     ['homeScreen', 'uploadQuizScreen', 'uploadAperteScreen', 'quizScreen', 'flashcardScreen', 'finalScreen', 'bottomBar'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
     });
-    // Overlay: rimuovo active in modo da non rompere il CSS
     ['settingsOverlay', 'statsOverlay', 'bookmarksOverlay', 'resumeOverlay'].forEach(id => {
         document.getElementById(id).classList.remove('active');
     });
@@ -289,7 +300,7 @@ function goHome() {
     appState.currentMode = 'home';
     hideAllScreens();
     document.getElementById('btnHome').classList.add('hidden');
-    document.getElementById('titleText').innerHTML = "QUIZ LATINO V6";
+    document.getElementById('titleText').innerHTML = "QUIZ & FLASHCARDS";
     document.getElementById('btnStats').disabled = true;
     document.getElementById('btnSettings').disabled = true;
     document.getElementById('homeScreen').classList.remove('hidden');
@@ -316,7 +327,6 @@ function openMode(mode) {
         let saved = null;
         try { saved = JSON.parse(localStorage.getItem(autoKey)); } catch(e){}
         
-        // Se c'è un salvataggio compatibile, mostra l'overlay per riprendere
         if (saved && saved.appState && saved.appState.currentMode === mode && saved.currentQuiz.length > 0) {
             document.getElementById('resumeOverlay').classList.add('active');
         } else {
@@ -422,7 +432,7 @@ document.getElementById('htmlInputAperte').addEventListener('change', (e) => {
     reader.onload = (evt) => {
         try {
             const doc = new DOMParser().parseFromString(evt.target.result, 'text/html');
-            let tempDB = [], curLesson = 0, currentItem = null, state = 0; // 0=fuori, 1=domanda, 2=risposta
+            let tempDB = [], curLesson = 0, currentItem = null, state = 0; 
 
             doc.querySelectorAll('p').forEach(p => {
                 let text = p.textContent.replace(/\u00A0/g, ' ').trim();
@@ -507,7 +517,7 @@ function renderQuizQuestion() {
         const btn = document.createElement('button'); btn.className = 'option-btn'; btn.innerHTML = `<span class="key-badge">${idx + 1}</span> ${opt.text}`;
         btn.onclick = () => handleQuizAnswer(btn, opt, ops); optsContainer.appendChild(btn);
     });
-    saveAutosave(); // Salva lo stato (currentIndex) prima di rispondere
+    saveAutosave(); 
 }
 
 function handleQuizAnswer(btn, selectedOpt, allOpts) {
@@ -545,6 +555,7 @@ function rateFlashcard(rating) {
     if (rating <= 2) { recordError(q.question, true); } else if (rating >= 4) { recordError(q.question, false); isCorrect = true; score++; } 
     sessionHistory.push({ question: q.question, lezione: q.lezione, given: `Voto: ${rating}/5`, correct: "Richiesto: 4 o 5", isCorrect: isCorrect });
     document.getElementById('progressBar').style.width = `${((currentIndex + 1) / currentQuiz.length) * 100}%`;
+    saveAutosave();
     if (currentIndex < currentQuiz.length - 1) { currentIndex++; renderFlashcard(); } else { showFinalScreen(); }
 }
 
@@ -567,14 +578,6 @@ function showFinalScreen() {
     saveTestToHistory();
 }
 
-function fireConfetti() {
-    const colors = ['#7c6af5', '#34d399', '#facc15', '#f87171', '#38bdf8'];
-    for(let i=0; i<80; i++) {
-        let conf = document.createElement('div'); conf.className = 'confetti'; conf.style.left = Math.random() * 100 + 'vw'; conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; conf.style.animationDuration = (Math.random() * 3 + 2) + 's'; conf.style.animationDelay = (Math.random() * 0.5) + 's';
-        document.body.appendChild(conf); setTimeout(() => { if(conf.parentNode) conf.remove(); }, 5000); 
-    }
-}
-
 function saveTestToHistory() {
     if (appState.testSaved) return; appState.testSaved = true;
     let tests = []; try { tests = JSON.parse(localStorage.getItem(getActiveKeys().HIST) || '[]'); } catch(e){}
@@ -588,7 +591,8 @@ function saveTestToHistory() {
 // ==============================================================
 // DASHBOARD & IMPOSTAZIONI
 // ==============================================================
-document.getElementById('btnStats').onclick = () => { document.getElementById('statsOverlay').classList.add('active'); document.getElementById('statsModeBadge').textContent = appState.currentMode === 'quiz' ? 'QUIZ' : 'APERTE'; renderDashboard(5); };
+function openStats() { document.getElementById('statsOverlay').classList.add('active'); document.getElementById('statsModeBadge').textContent = appState.currentMode === 'quiz' ? 'QUIZ' : 'APERTE'; renderDashboard(5); }
+document.getElementById('btnStats').onclick = openStats;
 function closeStats() { document.getElementById('statsOverlay').classList.remove('active'); }
 
 function renderDashboard(limit) {
@@ -648,11 +652,11 @@ function setMode(mode) {
 }
 function updateRefineSettingsStats(mode) {
     const txt = document.getElementById('errorStatsText');
-    if (mode === 'refine') { const errs = getErrorDict(); let tot = 0; for (let k in errs) tot += errs[k]; txt.innerHTML = tot === 0 ? "<span style='color:var(--subtext)'>Nessun errore in memoria.</span>" : `Pescherà tra <b>${tot}</b> errori.`; } 
-    else if (mode === 'bookmarks') { const bks = getBookmarks(); txt.innerHTML = bks.length === 0 ? "<span style='color:var(--subtext)'>Nessun segnalibro salvato.</span>" : `Pescherà tra <b>${bks.length}</b> segnalibri.`; }
+    if (mode === 'refine') { const errs = getErrorDict(); let tot = 0; for (let k in errs) tot += errs[k]; txt.innerHTML = tot === 0 ? "<span style='color:var(--subtext)'>Nessun errore registrato in questa modalità.</span>" : `Pescherà tra <b>${tot}</b> errori.`; } 
+    else if (mode === 'bookmarks') { const bks = getBookmarks(); txt.innerHTML = bks.length === 0 ? "<span style='color:var(--subtext)'>Nessun segnalibro salvato in questa modalità.</span>" : `Pescherà tra <b>${bks.length}</b> segnalibri.`; }
 }
-function resetErrors() { if (confirm("Cancella Cronologia e Errori?")) { try{localStorage.removeItem(getActiveKeys().ERR); localStorage.removeItem(getActiveKeys().HIST);}catch(e){} if(appState.studyMode === 'refine') updateRefineSettingsStats('refine'); updatePoolBadges(); closeStats(); } }
-function resetDatabase() { if(confirm("Cancellare il database attuale?")) { try { localStorage.removeItem(getActiveKeys().DB); } catch(e){} location.reload(); } }
+function resetErrors() { if (confirm("Cancella Cronologia e Errori per la modalità corrente? (Segnalibri mantenuti)")) { try{localStorage.removeItem(getActiveKeys().ERR); localStorage.removeItem(getActiveKeys().HIST);}catch(e){} if(appState.studyMode === 'refine') updateRefineSettingsStats('refine'); updatePoolBadges(); closeStats(); } }
+function resetDatabase() { if(confirm("Cancellare il database attuale e tornare al caricamento?")) { try { localStorage.removeItem(getActiveKeys().DB); } catch(e){} location.reload(); } }
 
 function buildLessonGrid() {
     const grid = document.getElementById('lessonsGrid'); grid.innerHTML = '';
